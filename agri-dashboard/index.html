@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="KisaanSahayak - National Agriculture & Disease Outbreak Intelligence System. Real-time geo-spatial pathogen tracking, AI Crop Doctor, hyper-local weather agro-advisory, live Mandi rates, and verified NGO support.">
+  <title>KisaanSahayak - Smart Agriculture & Disease Outbreak Intelligence</title>
+  
+  <!-- Leaflet CSS for Interactive India GIS Outbreak Mapping -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  
+  <!-- Core Design System CSS -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Top Surveillance Marquee Bar -->
+  <div class="top-surveillance-bar">
+    <div class="surveillance-left">
+      <span class="live-badge">
+        <span class="live-pulse"></span>
+        <span data-i18n="live_surveillance">LIVE SURVEILLANCE</span>
+      </span>
+      <span class="ticker-text" data-i18n="top_ticker">⚠️ High Alert: Wheat Yellow Rust in Punjab & Cotton Pink Bollworm in Vidarbha | Over 2.89 Lakh Hectares under active state surveillance</span>
+    </div>
+    <div class="surveillance-right">
+      <select id="global-lang-select" class="lang-select-box" aria-label="Select Language">
+        <option value="en">English (EN)</option>
+        <option value="hi">हिन्दी (HI)</option>
+        <option value="pa">ਪੰਜਾਬੀ (PA)</option>
+        <option value="mr">मराठी (MR)</option>
+        <option value="te">తెలుగు (TE)</option>
+        <option value="ta">தமிழ் (TA)</option>
+        <option value="gu">ગુજરાતી (GU)</option>
+        <option value="bn">বাংলা (BN)</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Main Navigation Header -->
+  <header class="main-header">
+    <div class="header-container">
+      <div class="brand-section" onclick="navigateTo('view-home')">
+        <div class="brand-logo-icon">🌱</div>
+        <span class="brand-name" data-i18n="brand_name">KisaanSahayak</span>
+      </div>
+
+      <button class="btn-header-report" onclick="openReportModal()">
+        <span>+ 📢</span> <span data-i18n="btn_report_outbreak">Report Outbreak</span>
+      </button>
+
+      <nav class="nav-pills-bar" id="main-nav-bar">
+        <button class="nav-pill-btn active" data-view="view-home" onclick="navigateTo('view-home')">
+          <span>🏠</span> <span data-i18n="nav_home">Dashboard Hub</span>
+        </button>
+        <button class="nav-pill-btn" data-view="view-disease-map" onclick="navigateTo('view-disease-map')">
+          <span>📍</span> <span data-i18n="nav_outbreaks">Disease Outbreak Map</span>
+          <span class="pill-badge badge-red">3 Red Alerts</span>
+        </button>
+        <button class="nav-pill-btn" data-view="view-crop-doctor" onclick="navigateTo('view-crop-doctor')">
+          <span>🔬</span> <span data-i18n="nav_doctor">AI Crop Doctor</span>
+        </button>
+        <button class="nav-pill-btn" data-view="view-weather" onclick="navigateTo('view-weather')">
+          <span>🌦️</span> <span data-i18n="nav_weather">Weather & Agro-Advisory</span>
+        </button>
+        <button class="nav-pill-btn" data-view="view-mandi-rates" onclick="navigateTo('view-mandi-rates')">
+          <span>🌾</span> <span data-i18n="nav_mandi">Live Mandi Rates</span>
+        </button>
+        <button class="nav-pill-btn" data-view="view-ngo-gov" onclick="navigateTo('view-ngo-gov')">
+          <span>🏢</span> <span data-i18n="nav_ngo">NGO & Government Hub</span>
+          <span class="pill-badge badge-blue">Direct Connect</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Application Modular Viewport Container -->
+  <main class="app-viewport">
+
+    <!-- ====================================================================
+         VIEW 0: MAIN DASHBOARD NAVIGATION HUB (CLEAN HOME SCREEN)
+         ==================================================================== -->
+    <section id="view-home" class="page-view active-view">
+      
+      <!-- Hero Banner -->
+      <div class="hub-hero-banner">
+        <span class="hub-badge" data-i18n="hub_welcome_badge">NATIONAL AGRICULTURAL SURVEILLANCE & SUPPORT PLATFORM</span>
+        <h1 class="hub-hero-title" data-i18n="hub_title">Empowering Indian Farmers with Real-Time Agro-Intelligence</h1>
+        <p class="hub-hero-subtitle" data-i18n="hub_subtitle">Select a specialized module below to access hyper-local crop disease monitoring, AI diagnosis, micro-weather advisories, live mandi pricing, and verified NGO assistance.</p>
+      </div>
+
+      <!-- KPI Summary Cards Grid -->
+      <div class="kpi-summary-grid">
+        <div class="kpi-summary-card kpi-card-red" onclick="navigateTo('view-disease-map')" style="cursor: pointer;">
+          <div class="kpi-icon-box icon-red">⚠️</div>
+          <div>
+            <div class="kpi-num">3 Zones</div>
+            <div class="kpi-desc">Critical / Red Alert Outbreaks</div>
+          </div>
+        </div>
+        <div class="kpi-summary-card kpi-card-orange" onclick="navigateTo('view-disease-map')" style="cursor: pointer;">
+          <div class="kpi-icon-box" style="background:#ffedd5; color:#ea580c;">⚡</div>
+          <div>
+            <div class="kpi-num">3 Zones</div>
+            <div class="kpi-desc">High Spread Velocity Alerts</div>
+          </div>
+        </div>
+        <div class="kpi-summary-card kpi-card-yellow" onclick="navigateTo('view-disease-map')" style="cursor: pointer;">
+          <div class="kpi-icon-box icon-yellow">🔍</div>
+          <div>
+            <div class="kpi-num">3 Zones</div>
+            <div class="kpi-desc">Moderate Active Surveillance</div>
+          </div>
+        </div>
+        <div class="kpi-summary-card kpi-card-green" onclick="navigateTo('view-weather')" style="cursor: pointer;">
+          <div class="kpi-icon-box icon-green">🛡️</div>
+          <div>
+            <div class="kpi-num">289.7k Ha</div>
+            <div class="kpi-desc">Total Acreage Monitored</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5 Core Module Cards (Navigation Hub) -->
+      <div class="hub-services-grid">
+        
+        <!-- Module 1: Disease Outbreak Map -->
+        <div class="hub-service-card" onclick="navigateTo('view-disease-map')">
+          <div>
+            <div class="hub-card-header">
+              <div class="hub-icon-wrapper icon-red">📍</div>
+              <span class="pill-badge badge-red">3 Red Alerts Active</span>
+            </div>
+            <h2 class="hub-card-title" data-i18n="hub_card_disease_title">Disease Outbreak Map</h2>
+            <p class="hub-card-desc" data-i18n="hub_card_disease_desc">Real-time geo-spatial mapping of crop epidemics, pest infestation velocity, and official ICAR advisories across Indian states.</p>
+          </div>
+          <div class="hub-card-footer">
+            <span class="hub-card-action-text" data-i18n="launch_service">Launch Module →</span>
+            <span style="font-size: 0.8rem; color: var(--text-muted);">6 Active Belts</span>
+          </div>
+        </div>
+
+        <!-- Module 2: AI Crop Doctor -->
+        <div class="hub-service-card" onclick="navigateTo('view-crop-doctor')">
+          <div>
+            <div class="hub-card-header">
+              <div class="hub-icon-wrapper icon-purple">🔬</div>
+              <span class="pill-badge badge-green">Instant Neural Dx</span>
+            </div>
+            <h2 class="hub-card-title" data-i18n="hub_card_doctor_title">AI Crop Doctor</h2>
+            <p class="hub-card-desc" data-i18n="hub_card_doctor_desc">Upload crop leaf photos or select specimen presets for instant neural disease diagnosis, spray calculators, and organic remedies.</p>
+          </div>
+          <div class="hub-card-footer">
+            <span class="hub-card-action-text" data-i18n="launch_service">Launch Module →</span>
+            <span style="font-size: 0.8rem; color: var(--text-muted);">Photo / Specimen Rx</span>
+          </div>
+        </div>
+
+        <!-- Module 3: Weather & Agro-Advisory -->
+        <div class="hub-service-card" onclick="navigateTo('view-weather')">
+          <div>
+            <div class="hub-card-header">
+              <div class="hub-icon-wrapper icon-green">🌦️</div>
+              <span class="pill-badge badge-green">33°C Overcast</span>
+            </div>
+            <h2 class="hub-card-title" data-i18n="hub_card_weather_title">Weather & Agro-Advisory</h2>
+            <p class="hub-card-desc" data-i18n="hub_card_weather_desc">Location-aware microclimate telemetry, 7-day agricultural forecast, dynamic irrigation guidance, and wash-off spray risks.</p>
+          </div>
+          <div class="hub-card-footer">
+            <span class="hub-card-action-text" data-i18n="launch_service">Launch Module →</span>
+            <span style="font-size: 0.8rem; color: var(--text-muted);">48-Hour Field Guidance</span>
+          </div>
+        </div>
+
+        <!-- Module 4: Live Mandi Rates -->
+        <div class="hub-service-card" onclick="navigateTo('view-mandi-rates')">
+          <div>
+            <div class="hub-card-header">
+              <div class="hub-icon-wrapper icon-yellow">🌾</div>
+              <span class="pill-badge badge-blue">APMC Spot Feeds</span>
+            </div>
+            <h2 class="hub-card-title" data-i18n="hub_card_mandi_title">Live Mandi Rates</h2>
+            <p class="hub-card-desc" data-i18n="hub_card_mandi_desc">Real-time APMC commodity spot rates, MSP benchmark comparisons, arrival volumes, and historical price trend analytics.</p>
+          </div>
+          <div class="hub-card-footer">
+            <span class="hub-card-action-text" data-i18n="launch_service">Launch Module →</span>
+            <span style="font-size: 0.8rem; color: var(--text-muted);">6 Key Mandis Synced</span>
+          </div>
+        </div>
+
+        <!-- Module 5: NGO & Government Hub -->
+        <div class="hub-service-card" onclick="navigateTo('view-ngo-gov')">
+          <div>
+            <div class="hub-card-header">
+              <div class="hub-icon-wrapper icon-blue">🏢</div>
+              <span class="pill-badge badge-blue">Govt Verified</span>
+            </div>
+            <h2 class="hub-card-title" data-i18n="hub_card_ngo_title">NGO & Government Hub</h2>
+            <p class="hub-card-desc" data-i18n="hub_card_ngo_desc">Direct connect with verified agricultural NGOs, agronomists, DBT subsidy schemes, and 24x7 emergency helpline directory.</p>
+          </div>
+          <div class="hub-card-footer">
+            <span class="hub-card-action-text" data-i18n="launch_service">Launch Module →</span>
+            <span style="font-size: 0.8rem; color: var(--text-muted);">Grants & Direct Dial</span>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ====================================================================
+         VIEW 1: DISEASE OUTBREAK MAP VIEW
+         ==================================================================== -->
+    <section id="view-disease-map" class="page-view">
+      
+      <!-- Back Bar -->
+      <div class="view-back-bar">
+        <button class="btn-back-hub" onclick="navigateTo('view-home')">
+          <span data-i18n="back_to_hub">← Back to Dashboard Hub</span>
+        </button>
+      </div>
+
+      <!-- Section Header -->
+      <div class="section-header-block">
+        <div class="section-header-info">
+          <h1 class="section-title">
+            <span class="country-pill">IN</span> <span data-i18n="disease_map_title">India Agricultural Disease Outbreak Tracker</span>
+          </h1>
+          <p class="section-subtitle" data-i18n="disease_map_subtitle">Real-time geo-spatial mapping of crop epidemics, pest infestation intensity, and official ICAR advisories across Indian states.</p>
+        </div>
+        <div class="section-header-actions">
+          <button class="btn-secondary" onclick="resetMapCenter()">
+            <span>🎯</span> <span data-i18n="btn_reset_map">Reset India Map Center</span>
+          </button>
+          <button class="btn-primary" onclick="openReportModal()">
+            <span>📢</span> <span data-i18n="btn_report_field">Report Field Outbreak</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- KPI Summary Cards Grid -->
+      <div class="kpi-summary-grid">
+        <div class="kpi-summary-card kpi-card-red">
+          <div class="kpi-icon-box icon-red">⚠️</div>
+          <div>
+            <div class="kpi-num">3 Zones</div>
+            <div class="kpi-desc">Critical / Red Alert Outbreaks</div>
+          </div>
+        </div>
+        <div class="kpi-summary-card kpi-card-orange">
+          <div class="kpi-icon-box" style="background:#ffedd5; color:#ea580c;">⚡</div>
+          <div>
+            <div class="kpi-num">3 Zones</div>
+            <div class="kpi-desc">High Spread Velocity Alerts</div>
+          </div>
+        </div>
+        <div class="kpi-summary-card kpi-card-yellow">
+          <div class="kpi-icon-box icon-yellow">🔍</div>
+          <div>
+            <div class="kpi-num">3 Zones</div>
+            <div class="kpi-desc">Moderate Active Surveillance</div>
+          </div>
+        </div>
+        <div class="kpi-summary-card kpi-card-green">
+          <div class="kpi-icon-box icon-green">🛡️</div>
+          <div>
+            <div class="kpi-num">289.7k Ha</div>
+            <div class="kpi-desc">Total Acreage Monitored</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Outbreak Filters -->
+      <div class="filter-row">
+        <span style="font-family: var(--font-heading); font-size: 0.82rem; font-weight: 700; color: var(--text-dark);" data-i18n="severity_filter_label">Severity Filter:</span>
+        <div class="filter-pills-group" id="outbreak-severity-filters">
+          <button class="filter-pill active" data-severity="all" onclick="filterHotspotsBySeverity('all')">All Outbreaks</button>
+          <button class="filter-pill" data-severity="severe" onclick="filterHotspotsBySeverity('severe')"><span style="color:var(--accent-red)">●</span> Severe (Red)</button>
+          <button class="filter-pill" data-severity="high" onclick="filterHotspotsBySeverity('high')"><span style="color:var(--accent-orange)">●</span> High Alert (Orange)</button>
+          <button class="filter-pill" data-severity="moderate" onclick="filterHotspotsBySeverity('moderate')"><span style="color:var(--accent-yellow)">●</span> Moderate (Yellow)</button>
+          <button class="filter-pill" data-severity="controlled" onclick="filterHotspotsBySeverity('controlled')"><span style="color:var(--primary)">●</span> Controlled (Green)</button>
+        </div>
+
+        <select id="crop-category-filter" class="form-select-sm" onchange="filterHotspotsByCrop(this.value)">
+          <option value="all">🌾 All Crop Categories</option>
+          <option value="cereals">Cereals & Grains (Wheat, Rice)</option>
+          <option value="cash_crops">Cash Crops & Fibre (Cotton, Sugarcane)</option>
+          <option value="spices">Spices (Chilli, Black Pepper)</option>
+          <option value="oilseeds">Oilseeds & Pulses (Soybean, Mustard)</option>
+        </select>
+      </div>
+
+      <!-- Map & Dossier Split Layout -->
+      <div class="map-dossier-layout">
+        <!-- Interactive Leaflet Map -->
+        <div class="map-container-wrapper">
+          <div id="india-leaflet-map"></div>
+          
+          <!-- Outbreak Intensity Scale Floating Legend -->
+          <div class="map-floating-legend" id="map-floating-legend">
+            <div class="legend-header">
+              <span>🗺️</span> <span data-i18n="legend_title">OUTBREAK INTENSITY SCALE</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-dot" style="background: var(--accent-red);"></span>
+              <span data-i18n="legend_severe">Critical / Severe Outbreak &gt; 80%</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-dot" style="background: var(--accent-orange);"></span>
+              <span data-i18n="legend_high">High Spread Warning 60-80%</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-dot" style="background: var(--accent-yellow);"></span>
+              <span data-i18n="legend_moderate">Moderate Monitoring 40-60%</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-dot" style="background: var(--primary);"></span>
+              <span data-i18n="legend_controlled">Controlled / Watch Zone &lt; 40%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Outbreak Dossier Panel -->
+        <div class="outbreak-dossier-panel" id="outbreak-dossier-card">
+          <div class="dossier-header-bar">
+            <div class="dossier-title-text">
+              <span>📍</span> <span data-i18n="dossier_title">Outbreak Dossier</span>
+            </div>
+            <span class="dossier-severity-badge" id="dossier-severity-tag">SEVERE INTENSITY</span>
+          </div>
+
+          <div class="dossier-body-content" id="dossier-content-body">
+            <!-- Populated via JavaScript -->
+          </div>
+
+          <div class="dossier-actions-footer">
+            <button class="btn-broadcast-warning" onclick="broadcastEarlyWarning()">
+              <span>📢</span> <span data-i18n="btn_broadcast">Broadcast Early Warning to Registered Farmers</span>
+            </button>
+            <button class="btn-download-bulletin" onclick="downloadStateBulletin()">
+              <span>📄</span> <span data-i18n="btn_download_bulletin">Download State Advisory Bulletin (PDF)</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Active Hotspots Cards Grid -->
+      <h2 class="hotspots-section-header">
+        <span>📍</span> <span data-i18n="hotspots_heading">Active Hotspots & Monitored Agricultural Belts Across India</span>
+      </h2>
+      <div class="hotspots-cards-grid" id="hotspots-cards-container">
+        <!-- Rendered dynamically from data.js -->
+      </div>
+
+    </section>
+
+    <!-- ====================================================================
+         VIEW 2: AI CROP DOCTOR (DEDICATED MODULAR PAGE)
+         ==================================================================== -->
+    <section id="view-crop-doctor" class="page-view">
+      
+      <!-- Back Bar -->
+      <div class="view-back-bar">
+        <button class="btn-back-hub" onclick="navigateTo('view-home')">
+          <span data-i18n="back_to_hub">← Back to Dashboard Hub</span>
+        </button>
+      </div>
+
+      <!-- Section Header -->
+      <div class="section-header-block">
+        <div class="section-header-info">
+          <h1 class="section-title">
+            <span>🔬</span> <span data-i18n="doctor_title">AI Crop Doctor</span>
+          </h1>
+          <p class="section-subtitle" data-i18n="doctor_subtitle">Upload a photograph of your infected crop leaf or select a specimen to get instant diagnostic confirmation and organic/chemical remedies.</p>
+        </div>
+      </div>
+
+      <!-- Crop Doctor Workbench Layout -->
+      <div class="crop-doctor-workbench">
+        
+        <!-- Left Panel: Upload Box & Specimen Presets -->
+        <div class="doctor-panel-card">
+          <h2 class="panel-subheading">
+            <span>📷</span> <span data-i18n="upload_box_title">Upload Crop Leaf Photo for Instant Analysis</span>
+          </h2>
+
+          <!-- Dashed Upload Dropzone -->
+          <div class="image-dropzone-box" id="leaf-image-dropzone" onclick="document.getElementById('leaf-file-input').click()">
+            <div class="dropzone-camera-icon">📷</div>
+            <div class="dropzone-prompt" data-i18n="upload_box_prompt">Click or Drag & Drop Leaf Image Here</div>
+            <div class="dropzone-hint" data-i18n="upload_box_hint">Supports JPG, PNG, WEBP from mobile camera or gallery</div>
+            <button type="button" class="btn-choose-file" data-i18n="btn_choose_image">Choose Image from Device</button>
+            <input type="file" id="leaf-file-input" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
+          </div>
+
+          <!-- Uploaded Preview -->
+          <div class="uploaded-preview-wrapper" id="uploaded-preview-wrapper">
+            <img id="uploaded-leaf-preview" src="" alt="Uploaded Leaf Preview">
+            <button class="btn-remove-image" onclick="clearUploadedImage(event)">✕</button>
+          </div>
+
+          <!-- Presets Selection -->
+          <h3 style="font-family: var(--font-heading); font-size: 0.92rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.75rem;" data-i18n="presets_title">
+            Or Click a High-Risk Specimen Preset:
+          </h3>
+          <div class="presets-grid" id="specimens-presets-grid">
+            <!-- Dynamically populated from data.js -->
+          </div>
+        </div>
+
+        <!-- Right Panel: Diagnostic Results Output -->
+        <div class="doctor-panel-card">
+          
+          <!-- Empty State -->
+          <div class="diagnostic-empty-state" id="doctor-empty-state">
+            <div class="empty-state-icon">🧪</div>
+            <h3 class="empty-state-title" data-i18n="no_diag_title">No Diagnostic Run Yet</h3>
+            <p class="empty-state-desc" data-i18n="no_diag_desc">Select one of the sample presets on the left or upload an image to view instant pathogen identification and spray recommendations.</p>
+          </div>
+
+          <!-- Active Diagnosis Result Output -->
+          <div class="diagnostic-result-container" id="doctor-result-container">
+            <!-- Dynamically rendered on analysis -->
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ====================================================================
+         VIEW 3: WEATHER & AGRO-ADVISORY ENGINE
+         ==================================================================== -->
+    <section id="view-weather" class="page-view">
+      
+      <!-- Back Bar -->
+      <div class="view-back-bar">
+        <button class="btn-back-hub" onclick="navigateTo('view-home')">
+          <span data-i18n="back_to_hub">← Back to Dashboard Hub</span>
+        </button>
+      </div>
+
+      <!-- Section Header -->
+      <div class="section-header-block">
+        <div class="section-header-info">
+          <h1 class="section-title">
+            <span>🌦️</span> <span data-i18n="weather_title">Dynamic Weather & Live Agro-Advisory Engine</span>
+          </h1>
+          <p class="section-subtitle" data-i18n="weather_subtitle">Real-time location-aware forecasts with dynamic irrigation, pesticide spray windows, and disease sporulation risk guidance.</p>
+          <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.35rem;" id="weather-timestamp-text">
+            Live Synced: 15/8/2026 05:43:31 pm IST (Station: Ludhiana (Punjab))
+          </div>
+        </div>
+      </div>
+
+      <!-- Weather Controls -->
+      <div class="weather-controls-bar">
+        <div style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
+          <span style="font-family: var(--font-heading); font-size: 0.85rem; font-weight: 700; color: var(--text-dark);" data-i18n="select_district">Select Farm District:</span>
+          <select id="weather-district-select" class="form-select-sm" onchange="changeWeatherDistrict(this.value)">
+            <!-- Populated from data.js -->
+          </select>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 0.6rem;">
+          <button class="btn-secondary" onclick="useGpsLocation()">
+            <span>📍</span> <span data-i18n="btn_gps_location">Use My Current GPS Location</span>
+          </button>
+          <button class="btn-primary" onclick="refreshWeatherTelemetry()">
+            <span>🔄</span> <span data-i18n="btn_refresh_telemetry">Refresh Live Telemetry</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Big Green Hero Weather Card -->
+      <div class="weather-hero-card" id="weather-hero-card">
+        <div class="weather-hero-top">
+          <div class="weather-temp-badge">
+            <div class="hero-temp-num" id="hero-temp-num">33°C</div>
+            <div>
+              <div class="hero-condition-text" id="hero-condition-text">Overcast / Heavy Clouds</div>
+              <div class="hero-feels-like" id="hero-feels-like">Feels like 39°C • Location: Ludhiana (Punjab)</div>
+            </div>
+          </div>
+          <div style="font-size: 3.5rem;">☁️</div>
+        </div>
+
+        <div class="weather-metrics-tiles-row">
+          <div class="weather-tile">
+            <div class="weather-tile-icon">💧</div>
+            <div class="weather-tile-num" id="hero-humidity">65%</div>
+            <div class="weather-tile-label" data-i18n="rel_humidity">RELATIVE HUMIDITY</div>
+          </div>
+          <div class="weather-tile">
+            <div class="weather-tile-icon">💨</div>
+            <div class="weather-tile-num" id="hero-wind">8 km/h</div>
+            <div class="weather-tile-label" data-i18n="wind_speed">WIND SPEED</div>
+          </div>
+          <div class="weather-tile">
+            <div class="weather-tile-icon">🌧️</div>
+            <div class="weather-tile-num" id="hero-rain">0 mm</div>
+            <div class="weather-tile-label" data-i18n="current_rain">CURRENT RAIN</div>
+          </div>
+          <div class="weather-tile">
+            <div class="weather-tile-icon">☂️</div>
+            <div class="weather-tile-num" id="hero-rain-prob">97%</div>
+            <div class="weather-tile-label" data-i18n="rain_probability">RAIN PROBABILITY</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4 Actionable Advisory Cards -->
+      <div class="weather-advisories-grid" id="weather-advisories-grid">
+        <!-- Rendered from data.js -->
+      </div>
+
+      <!-- 7-Day Location Agricultural Forecast -->
+      <div class="forecast-container-card">
+        <h2 style="font-family: var(--font-heading); font-size: 1.15rem; font-weight: 800; color: var(--text-dark);" data-i18n="forecast_7day_title">
+          📅 7-Day Location Agricultural Forecast - Ludhiana (Punjab)
+        </h2>
+        <div class="forecast-days-row" id="forecast-days-row">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ====================================================================
+         VIEW 4: LIVE MANDI PRICES & MARKET INTELLIGENCE
+         ==================================================================== -->
+    <section id="view-mandi-rates" class="page-view">
+      
+      <!-- Back Bar -->
+      <div class="view-back-bar">
+        <button class="btn-back-hub" onclick="navigateTo('view-home')">
+          <span data-i18n="back_to_hub">← Back to Dashboard Hub</span>
+        </button>
+      </div>
+
+      <!-- Section Header -->
+      <div class="section-header-block">
+        <div class="section-header-info">
+          <h1 class="section-title">
+            <span>🌾</span> <span data-i18n="mandi_title">Live APMC Mandi Prices & Market Intelligence</span>
+          </h1>
+          <p class="section-subtitle" data-i18n="mandi_subtitle">Real-time commodity spot prices across Indian agricultural mandis with price trends, MSP comparisons, and automated refresh.</p>
+        </div>
+        <div class="section-header-actions">
+          <button class="btn-primary" onclick="refreshMandiPrices()">
+            <span>🔄</span> <span data-i18n="btn_refresh_mandi">Refresh Market Prices</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Mandi Filter Bar -->
+      <div class="mandi-filter-bar">
+        <input type="text" id="mandi-search-input" class="mandi-search-input" placeholder="Search commodity, APMC market or variety..." data-i18n-placeholder="search_mandi_placeholder" oninput="filterMandiCards()">
+        
+        <select id="mandi-state-filter" class="form-select-sm" onchange="filterMandiCards()">
+          <option value="all">📍 All Indian States</option>
+          <option value="Maharashtra">Maharashtra</option>
+          <option value="Punjab">Punjab</option>
+          <option value="Andhra Pradesh">Andhra Pradesh</option>
+          <option value="Madhya Pradesh">Madhya Pradesh</option>
+          <option value="Haryana">Haryana</option>
+          <option value="Rajasthan">Rajasthan</option>
+        </select>
+
+        <select id="mandi-category-filter" class="form-select-sm" onchange="filterMandiCards()">
+          <option value="all">🏷️ All Commodities</option>
+          <option value="Fibre & Cash Crops">Fibre & Cash Crops</option>
+          <option value="Cereals & Grains">Cereals & Grains</option>
+          <option value="Spices">Spices</option>
+          <option value="Oilseeds">Oilseeds & Pulses</option>
+        </select>
+      </div>
+
+      <!-- Mandi Commodity Cards Grid -->
+      <div class="mandi-cards-grid" id="mandi-cards-container">
+        <!-- Rendered dynamically from data.js -->
+      </div>
+
+    </section>
+
+    <!-- ====================================================================
+         VIEW 5: NGO & GOVERNMENT SUPPORT HUB
+         ==================================================================== -->
+    <section id="view-ngo-gov" class="page-view">
+      
+      <!-- Back Bar -->
+      <div class="view-back-bar">
+        <button class="btn-back-hub" onclick="navigateTo('view-home')">
+          <span data-i18n="back_to_hub">← Back to Dashboard Hub</span>
+        </button>
+      </div>
+
+      <!-- Section Header -->
+      <div class="section-header-block">
+        <div class="section-header-info">
+          <h1 class="section-title">
+            <span>🏢</span> <span data-i18n="ngo_title">NGO & Government Support Hub</span>
+          </h1>
+          <p class="section-subtitle" data-i18n="ngo_subtitle">Connect directly with verified agricultural NGOs, agronomists, and apply for government subsidies, seed banks, and drought relief aid.</p>
+        </div>
+        <div class="section-header-actions">
+          <span class="pill-badge badge-red" style="font-size: 0.8rem; padding: 0.35rem 0.85rem;">🎉 24x7 Emergency Agri Helplines</span>
+        </div>
+      </div>
+
+      <!-- Sub Navigation Tabs -->
+      <div class="ngo-tabs-bar">
+        <button class="ngo-tab-btn active-tab" data-tab="ngos" onclick="switchNgoTab('ngos')">
+          💛 <span data-i18n="tab_ngos">Verified NGOs Directory & Direct Connect</span>
+        </button>
+        <button class="ngo-tab-btn" data-tab="schemes" onclick="switchNgoTab('schemes')">
+          🏛️ <span data-i18n="tab_schemes">Central & State Government Schemes (DBT)</span>
+        </button>
+        <button class="ngo-tab-btn" data-tab="helplines" onclick="switchNgoTab('helplines')">
+          📞 <span data-i18n="tab_helplines">Emergency Farmer Helplines & KVK Directory</span>
+        </button>
+      </div>
+
+      <!-- Filter Row for NGOs -->
+      <div class="filter-row" id="ngo-filter-row">
+        <input type="text" id="ngo-search-input" class="mandi-search-input" placeholder="Search NGO by name, district, service (e.g. Water, Organic, Pest, Seeds)..." data-i18n-placeholder="search_ngo_placeholder" oninput="filterNgos()">
+        
+        <select id="ngo-state-filter" class="form-select-sm" onchange="filterNgos()">
+          <option value="all">📍 All Indian States</option>
+          <option value="Maharashtra">Maharashtra</option>
+          <option value="Pan-India">Pan-India</option>
+          <option value="Tamil Nadu">Tamil Nadu</option>
+          <option value="New Delhi">New Delhi</option>
+        </select>
+
+        <select id="ngo-category-filter" class="form-select-sm" onchange="filterNgos()">
+          <option value="all">🏷️ All Support Categories</option>
+          <option value="Water">Water & Climate Resilience</option>
+          <option value="Sustainable">Sustainable Agriculture & Livestock</option>
+          <option value="Smallholder">Smallholder Livelihoods & FPOs</option>
+          <option value="Biodiversity">Agro-Biodiversity & Seed Banks</option>
+        </select>
+      </div>
+
+      <!-- Tab Content 1: Verified NGOs Grid -->
+      <div class="ngos-cards-grid" id="ngos-cards-container">
+        <!-- Dynamically rendered from data.js -->
+      </div>
+
+      <!-- Tab Content 2: Government DBT Schemes Grid -->
+      <div id="schemes-tab-container" style="display: none;">
+        <div class="ngos-cards-grid" id="schemes-cards-container">
+          <!-- Dynamically rendered -->
+        </div>
+      </div>
+
+      <!-- Tab Content 3: Helplines Directory -->
+      <div id="helplines-tab-container" style="display: none;">
+        <div class="doctor-panel-card">
+          <h2 class="panel-subheading">📞 National 24x7 Agricultural Emergency Directory</h2>
+          <div class="kpi-summary-grid" style="margin-top: 1rem;">
+            <div class="kpi-summary-card kpi-card-green">
+              <div class="kpi-icon-box icon-green">📞</div>
+              <div>
+                <div class="kpi-num">1800-180-1551</div>
+                <div class="kpi-desc">Kisan Call Centre (22 Official Languages)</div>
+              </div>
+            </div>
+            <div class="kpi-summary-card kpi-card-red">
+              <div class="kpi-icon-box icon-red">🚨</div>
+              <div>
+                <div class="kpi-num">1800-180-1552</div>
+                <div class="kpi-desc">National ICAR Pest Surveillance Desk</div>
+              </div>
+            </div>
+            <div class="kpi-summary-card kpi-card-yellow">
+              <div class="kpi-icon-box icon-yellow">🌾</div>
+              <div>
+                <div class="kpi-num">14447</div>
+                <div class="kpi-desc">Pradhan Mantri Fasal Bima (PMFBY) Claims</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ======================================================================
+       FLOATING INTERACTIVE WIDGETS
+       ====================================================================== -->
+  
+  <!-- Bottom-Left Kisan Call Centre -->
+  <div class="floating-kisan-call" onclick="triggerCallCenter()">
+    <div class="call-icon-circle">📞</div>
+    <div class="call-center-info">
+      <div class="call-center-title">
+        <span data-i18n="kisan_call_center">Kisan Call Centre</span>
+        <span class="call-toll-badge" data-i18n="toll_free_247">24x7 Toll-Free</span>
+      </div>
+      <div class="call-number">1800-180-1551</div>
+    </div>
+    <button class="btn-dial-quick" data-i18n="call_btn">Call</button>
+  </div>
+
+  <!-- Bottom-Right Kisan AI Saathi Button -->
+  <button class="floating-ai-saathi-btn" id="btn-toggle-ai-saathi" onclick="toggleChatDrawer()">
+    <span>🌿</span>
+    <span data-i18n="ask_ai_saathi">Ask Kisan AI Saathi</span>
+    <span class="live-pulse"></span>
+  </button>
+
+  <!-- Kisan AI Saathi Side Drawer -->
+  <div class="chat-drawer" id="chat-drawer">
+    <div class="chat-drawer-header">
+      <div style="display: flex; align-items: center; gap: 0.5rem;">
+        <span style="font-size: 1.25rem;">🌿</span>
+        <div>
+          <div style="font-family: var(--font-heading); font-weight: 800; font-size: 0.95rem;">Kisan AI Saathi</div>
+          <div style="font-size: 0.72rem; opacity: 0.9;">Real-time Agronomist & ICAR Intelligence</div>
+        </div>
+      </div>
+      <button onclick="toggleChatDrawer()" style="background:transparent; border:none; color:#fff; font-size:1.3rem; cursor:pointer;">✕</button>
+    </div>
+
+    <div class="chat-messages-body" id="chat-messages-container">
+      <div class="chat-msg msg-ai">
+        Namaste! I am your AI Agronomist Saathi. How can I help you today? You can ask about Yellow Rust treatment, Mandi rates, or weather precautions.
+      </div>
+    </div>
+
+    <div class="chat-prompts-row">
+      <span class="prompt-pill" onclick="sendQuickPrompt('How to treat Wheat Yellow Rust?')">Yellow Rust Remedy</span>
+      <span class="prompt-pill" onclick="sendQuickPrompt('Today Basmati Mandi price in Karnal?')">Basmati Mandi Price</span>
+      <span class="prompt-pill" onclick="sendQuickPrompt('Rain forecast for Ludhiana?')">Rain Forecast</span>
+    </div>
+
+    <div class="chat-input-bar">
+      <input type="text" id="chat-input-field" class="chat-input-field" placeholder="Ask any farming question..." onkeydown="if(event.key==='Enter') sendChatMessage()">
+      <button class="btn-send-chat" onclick="sendChatMessage()">➔</button>
+    </div>
+  </div>
+
+  <!-- ======================================================================
+       MODALS
+       ====================================================================== -->
+
+  <!-- Modal 1: Report Local Outbreak -->
+  <div class="modal-backdrop" id="report-outbreak-modal">
+    <div class="modal-dialog-box">
+      <div class="modal-dialog-header">
+        <div>
+          <h2 class="modal-dialog-title">
+            <span>📢</span> <span data-i18n="modal_report_title">Report Local Crop Disease / Pest Outbreak</span>
+          </h2>
+          <p class="modal-dialog-sub" data-i18n="modal_report_subtitle">Alert nearby farmers and notify the District Krishi Vigyan Kendra (KVK).</p>
+        </div>
+        <button class="btn-close-modal" onclick="closeReportModal()">✕</button>
+      </div>
+
+      <form id="report-outbreak-form" onsubmit="handleReportOutbreakSubmit(event)">
+        <div class="modal-dialog-body">
+          <div class="form-grid-2">
+            <div class="form-group-field">
+              <label data-i18n="form_name">Your Name / Farm ID *</label>
+              <input type="text" id="rep-name" class="form-input-text" placeholder="e.g. Gurpreet Singh" required>
+            </div>
+            <div class="form-group-field">
+              <label data-i18n="form_crop">Affected Crop *</label>
+              <input type="text" id="rep-crop" class="form-input-text" placeholder="e.g. Wheat, Cotton, Mustard" required>
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-group-field">
+              <label data-i18n="form_state">State *</label>
+              <input type="text" id="rep-state" class="form-input-text" placeholder="e.g. Punjab" required>
+            </div>
+            <div class="form-group-field">
+              <label data-i18n="form_district">District / Tehsil *</label>
+              <input type="text" id="rep-district" class="form-input-text" placeholder="e.g. Bathinda" required>
+            </div>
+          </div>
+
+          <div class="form-group-field">
+            <label data-i18n="form_symptoms">Observed Symptoms / Damage *</label>
+            <textarea id="rep-symptoms" class="form-textarea" placeholder="Describe discoloration, pustules, leaf spots, insect pests or drying patterns..." required></textarea>
+          </div>
+        </div>
+
+        <div class="modal-dialog-footer">
+          <button type="button" class="btn-secondary" onclick="closeReportModal()" data-i18n="btn_cancel">Cancel</button>
+          <button type="submit" class="btn-publish-danger" data-i18n="btn_publish_alert">Publish Field Alert to Map</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal 2: Price Analysis Chart Modal -->
+  <div class="modal-backdrop" id="price-analysis-modal">
+    <div class="modal-dialog-box">
+      <div class="modal-dialog-header">
+        <div>
+          <h2 class="modal-dialog-title" id="analysis-commodity-title">📈 APMC Price Analysis & Forecast</h2>
+          <p class="modal-dialog-sub" id="analysis-commodity-sub">30-day historical trend and liquidation advisory.</p>
+        </div>
+        <button class="btn-close-modal" onclick="closePriceAnalysisModal()">✕</button>
+      </div>
+      <div class="modal-dialog-body" id="analysis-modal-body">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Global Footer -->
+  <footer class="app-global-footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <span style="color: var(--primary-dark);">🌱</span>
+        <span>KisanConnect 360 Ecosystem</span>
+      </div>
+      <div class="footer-helplines-text">
+        <strong>NATIONAL HELPLINES:</strong> Kisan Call Centre: <strong>1800-180-1551</strong> | Pest Surveillance Desk: <strong>1800-180-1552</strong> | Crop Insurance PMFBY: <strong>14447</strong>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  
+  <!-- App Data & Translations -->
+  <script src="data.js"></script>
+  <script src="translations.js"></script>
+  
+  <!-- Main Application Logic & View Router -->
+  <script src="app.js"></script>
+</body>
+</html>
